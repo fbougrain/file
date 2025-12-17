@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+
+    <title>BinayTech — Crop Disease Detector</title>
+    <meta
+      name="description"
+      content="BinayTech Crop Disease Detector: AI-powered crop disease detection with weather insights, history, and community reporting."
+    />
+ <!-- Open Graph / social preview -->
+    <meta property="og:title" content="BinayTech — Crop Disease Detector" />
+    <meta
+      property="og:description"
+      content="AI-powered crop disease detection with weather insights, history, and community reporting."
+    />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="./web/favicon.png" />
+
+    <style>
+      :root {
+        --bg: #050607;
+        --surface: rgba(255, 255, 255, 0.06);
+        --surface-2: rgba(255, 255, 255, 0.10);
+        --text: rgba(255, 255, 255, 0.92);
+        --muted: rgba(255, 255, 255, 0.70);
+        --muted-2: rgba(255, 255, 255, 0.58);
+        --border: rgba(255, 255, 255, 0.12);
+        --accent: #6ee7b7;
+        --accent-2: #60a5fa;
+        --shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+        --radius: 18px;
+        --max: 1080px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial,
+          "Apple Color Emoji", "Segoe UI Emoji";
+        color: var(--text);
+        background: var(--bg);
+        line-height: 1.55;
+      }
+
+      /* Subtle professional glow on true-black background */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background: radial-gradient(900px 700px at 15% 10%, rgba(96, 165, 250, 0.14), transparent 60%),
+          radial-gradient(900px 700px at 85% 15%, rgba(110, 231, 183, 0.10), transparent 60%),
+          radial-gradient(900px 700px at 50% 95%, rgba(167, 139, 250, 0.08), transparent 60%);
+        opacity: 0.9;
+        transform: translateZ(0);
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 3px solid rgba(96, 165, 250, 0.65);
+        outline-offset: 3px;
+        border-radius: 10px;
+      }
+
+      .wrap {
+        max-width: var(--max);
+        margin: 0 auto;
+        padding: 24px;
+      }
+
+      .nav {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        backdrop-filter: blur(10px);
+        background: linear-gradient(to bottom, rgba(5, 6, 7, 0.78), rgba(5, 6, 7, 0.00));
+      }
+
+      .nav-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 14px 0;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 700;
+        letter-spacing: 0.2px;
+      }
+
+      .logo {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+        flex: 0 0 auto;
+      }
+
+      .logo svg {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      .links {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .link {
+        font-size: 14px;
+        color: var(--muted);
+        padding: 10px 10px;
+        border-radius: 12px;
+      }
+
+      .link:hover {
+        color: var(--text);
+        background: var(--surface);
+      }
+
+      .hero {
+        padding: 44px 0 22px;
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 22px;
+        align-items: center;
+      }
+
+      @media (max-width: 900px) {
+        .hero {
+          grid-template-columns: 1fr;
+          padding-top: 26px;
+        }
+      }
+
+      .card {
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03));
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+
+      .hero-card {
+        padding: 28px;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 0 6px rgba(110, 231, 183, 0.15);
+      }
+
+      h1 {
+        margin: 14px 0 10px;
+        font-size: clamp(30px, 4vw, 46px);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+      }
+
+      .sub {
+        margin: 0;
+        color: var(--muted);
+        font-size: 16px;
+        max-width: 58ch;
+      }
+
+      .cta {
+        margin-top: 18px;
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .btn {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        padding: 11px 14px;
+        border-radius: 14px;
+        font-weight: 650;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+
+      .btn:hover {
+        transform: translateY(-1px);
+        background: var(--surface-2);
+      }
+
+      .btn.primary {
+        border-color: rgba(110, 231, 183, 0.35);
+        background: linear-gradient(135deg, rgba(110, 231, 183, 0.20), rgba(96, 165, 250, 0.18));
+      }
+
+      .mini {
+        padding: 18px;
+      }
+
+      .stat {
+        display: grid;
+        gap: 6px;
+        padding: 14px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+      }
+
+      .k {
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .v {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+        padding: 16px;
+      }
+
+      @media (max-width: 900px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .feat {
+        padding: 18px;
+      }
+
+      .feat h3 {
+        margin: 6px 0 6px;
+        font-size: 16px;
+      }
+
+      .feat p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--muted);
+        background: var(--surface);
+        border: 1px solid var(--border);
+        padding: 8px 10px;
+        border-radius: 999px;
+      }
+
+      .icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 12px;
+        background: linear-gradient(135deg, rgba(110, 231, 183, 0.35), rgba(96, 165, 250, 0.30));
+        border: 1px solid rgba(255, 255, 255, 0.14);
+      }
+
+      .section {
+        margin-top: 20px;
+      }
+
+      .section .title {
+        padding: 18px;
+      }
+
+      .section h2 {
+        margin: 0;
+        font-size: 18px;
+        letter-spacing: -0.01em;
+      }
+
+      .section p {
+        margin: 6px 0 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .footer {
+        margin: 26px 0 18px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .sep {
+        opacity: 0.4;
+      }
+
+      .small {
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .play {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .play-badge {
+        width: 18px;
+        height: 18px;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #34d399, #60a5fa);
+        border: 1px solid var(--border);
+      }
+
+      .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        padding: 16px;
+      }
+
+      @media (max-width: 700px) {
+        .contact-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .mono {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+          "Courier New", monospace;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="nav">
+      <div class="wrap nav-inner">
+        <a class="brand" href="#top" aria-label="Go to top">
+          <span class="logo" aria-hidden="true">
+            <!-- Vector remake of the provided logo (helmet + phone) -->
+            <svg viewBox="0 0 64 64" role="img" aria-label="BinayTech logo">
+              <defs>
+                <linearGradient id="btBlue" x1="0" x2="1" y1="0" y2="1">
+                  <stop offset="0" stop-color="#1e5dbd" />
+                  <stop offset="1" stop-color="#2c74e6" />
+                </linearGradient>
+              </defs>
+              <!-- helmet -->
+              <path
+                d="M14 28c0-10 8.5-18 19-18s19 8 19 18v2H14v-2z"
+                fill="#ffd24a"
+                stroke="url(#btBlue)"
+                stroke-width="2.4"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M29 12h6v18h-6z"
+                fill="#ffd24a"
+                stroke="url(#btBlue)"
+                stroke-width="2.4"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M12 30h40v8H12z"
+                fill="#ffd24a"
+                stroke="url(#btBlue)"
+                stroke-width="2.4"
+                stroke-linejoin="round"
+              />
+              <!-- phone -->
+              <rect
+                x="18"
+                y="30"
+                width="28"
+                height="26"
+                rx="6"
+                fill="url(#btBlue)"
+                stroke="url(#btBlue)"
+                stroke-width="2.4"
+              />
+              <rect
+                x="20.5"
+                y="32.5"
+                width="23"
+                height="19"
+                rx="4.5"
+                fill="#ffffff"
+                opacity="0.92"
+              />
+              <circle cx="32" cy="54" r="2.4" fill="#1e5dbd" opacity="0.9" />
+            </svg>
+          </span>
+          <span>BinayTech</span>
+        </a>
+
+        <nav class="links" aria-label="Primary">
+          <a class="link" href="#features">Features</a>
+          <a class="link" href="#how">How it works</a>
+          <a class="link" href="#download">Download</a>
+          <a class="link" href="#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top" class="wrap">
+      <section class="hero">
+        <div class="card hero-card">
+          <div class="eyebrow"><span class="dot" aria-hidden="true"></span> BinayTech</div>
+          <h1>Modern mobile solutions by BinayTech.</h1>
+          <p class="sub">
+            Clean design, reliable performance, and a smooth user experience — built to solve real-world problems.
+          </p>
+
+          <div class="cta">
+            <a
+              class="btn primary play"
+              href="https://play.google.com/store/apps/details?id=com.binaytech.app"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <span class="play-badge" aria-hidden="true"></span>
+              Download on Google Play
+            </a>
+            <a class="btn" href="#contact">Contact us</a>
+          </div>
+
+          <p class="small" style="margin-top: 14px">
+            Built by <strong>BinayTech</strong>. Works great on mobile.
+          </p>
+        </div>
+
+        <div class="card mini" aria-label="Highlights">
+          <div style="display: grid; gap: 12px">
+            <div class="stat">
+              <div class="k">Focus</div>
+              <div class="v">Crop health + actionable insights</div>
+            </div>
+            <div class="stat">
+              <div class="k">Inputs</div>
+              <div class="v">Leaf photo + location</div>
+            </div>
+            <div class="stat">
+              <div class="k">Outputs</div>
+              <div class="v">Prediction + confidence + next steps</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="card section">
+        <div class="title">
+          <h2>Features</h2>
+          <p>Designed for fast diagnosis and confident decisions in the field.</p>
+        </div>
+        <div class="grid">
+          <div class="card feat" style="box-shadow: none">
+            <div class="pill"><span class="icon" aria-hidden="true"></span> Image-based diagnosis</div>
+            <h3>Upload and detect</h3>
+            <p>Quickly identify common crop diseases using an ML model trained for classification.</p>
+          </div>
+          <div class="card feat" style="box-shadow: none">
+            <div class="pill"><span class="icon" aria-hidden="true"></span> Weather context</div>
+            <h3>See conditions</h3>
+            <p>Understand temperature and humidity trends that can influence disease spread.</p>
+          </div>
+          <div class="card feat" style="box-shadow: none">
+            <div class="pill"><span class="icon" aria-hidden="true"></span> Reports & community</div>
+            <h3>Track and share</h3>
+            <p>Save reports and share observations so others can spot outbreaks early.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="how" class="card section">
+        <div class="title">
+          <h2>How it works</h2>
+          <p>A simple flow that’s easy to explain to users and stakeholders.</p>
+        </div>
+        <div class="grid">
+          <div class="card feat" style="box-shadow: none">
+            <div class="pill"><span class="icon" aria-hidden="true"></span> 1. Capture</div>
+            <h3>Take a clear photo</h3>
+            <p>Good lighting and focus improves results. Fill the frame with the leaf.</p>
+          </div>
+          <div class="card feat" style="box-shadow: none">
+            <div class="pill"><span class="icon" aria-hidden="true"></span> 2. Analyze</div>
+            <h3>Run model inference</h3>
+            <p>The backend processes the image and returns a prediction with confidence.</p>
+          </div>
+          <div class="card feat" style="box-shadow: none">
+            <div class="pill"><span class="icon" aria-hidden="true"></span> 3. Act</div>
+            <h3>Get next steps</h3>
+            <p>Show recommended actions (scouting, isolation, treatment) based on results.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="download" class="card section">
+        <div class="title">
+          <h2>Download</h2>
+          <p>Get the BinayTech Crop Disease Detector app on Android.</p>
+        </div>
+        <div class="grid">
+          <div class="card feat" style="box-shadow: none">
+            <h3>Google Play</h3>
+            <p class="small mono">Package: com.binaytech.app</p>
+            <div class="cta" style="margin-top: 12px">
+              <a
+                class="btn primary play"
+                href="https://play.google.com/store/apps/details?id=com.binaytech.app"
+                target="_blank"
+                rel="noreferrer"
+              >
+                <span class="play-badge" aria-hidden="true"></span>
+                Open on Google Play
+              </a>
+            </div>
+          </div>
+          <div class="card feat" style="box-shadow: none">
+            <h3>About the project</h3>
+            <p class="small">AI-driven crop disease identification with weather insights and reporting.</p>
+            <div class="cta" style="margin-top: 12px">
+              <a class="btn" href="./README.md">Readme</a>
+              <a class="btn" href="./FEATURE_ROADMAP.md">Roadmap</a>
+            </div>
+          </div>
+          <div class="card feat" style="box-shadow: none">
+            <h3>Note</h3>
+            <p class="small">GitHub Pages hosts this landing page only. The mobile app is distributed via Google Play.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="card section">
+        <div class="title">
+          <h2>Contact us</h2>
+          <p>Questions, feedback, or support — we’re happy to help.</p>
+        </div>
+
+        <div class="contact-grid">
+          <div class="card feat" style="box-shadow: none">
+            <div class="pill"><span class="icon" aria-hidden="true"></span> Phone</div>
+            <h3>Call us</h3>
+            <p class="mono"><a class="link" href="tel:+33771759956">+33 771 759 956</a></p>
+          </div>
+          <div class="card feat" style="box-shadow: none">
+            <div class="pill"><span class="icon" aria-hidden="true"></span> Email</div>
+            <h3>Email us</h3>
+            <p class="mono"><a class="link" href="mailto:Contact@binayTech.com">Contact@binayTech.com</a></p>
+          </div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <div>
+          <span>© <span id="y"></span> BinayTech</span>
+          <span class="sep">·</span>
+          <span>Built for GitHub Pages</span>
+        </div>
+        <div>
+          <a class="link" href="#top">Back to top</a>
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      // Small enhancements (safe for GitHub Pages).
+      document.getElementById("y").textContent = String(new Date().getFullYear());
+
+      // Smooth scroll for same-page anchors.
+      document.querySelectorAll('a[href^="#"]').forEach((a) => {
+        a.addEventListener("click", (e) => {
+          const id = a.getAttribute("href");
+          if (!id || id === "#") return;
+          const el = document.querySelector(id);
+          if (!el) return;
+          e.preventDefault();
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.pushState(null, "", id);
+        });
+      });
+    </script>
+  </body>
+</html>
